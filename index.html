@@ -88,8 +88,63 @@
     content:''; position:absolute; left:0; right:100%; bottom:0; height:1.5px;
     background:var(--rust); transition:right 0.25s ease;
   }
-  .nav-links a:hover::after{right:0;}
-  @media (max-width:680px){ .nav-links{display:none;} }
+  .nav-links a:hover::after, .nav-links a.active::after{right:0;}
+  .nav-links a.active{color:var(--rust);}
+  .nav-toggle{
+    display:none; background:none; border:1px solid var(--line); border-radius:var(--radius);
+    width:38px; height:38px; align-items:center; justify-content:center; cursor:pointer; padding:0;
+  }
+  .nav-toggle span, .nav-toggle span::before, .nav-toggle span::after{
+    content:''; display:block; width:16px; height:1.5px; background:var(--text-on-paper);
+    position:relative; transition:transform 0.2s ease, opacity 0.2s ease;
+  }
+  .nav-toggle span::before{position:absolute; top:-5px;}
+  .nav-toggle span::after{position:absolute; top:5px;}
+  .nav-toggle.open span{background:transparent;}
+  .nav-toggle.open span::before{transform:translateY(5px) rotate(45deg);}
+  .nav-toggle.open span::after{transform:translateY(-5px) rotate(-45deg);}
+  .nav-mobile{
+    display:none; grid-template-rows:0fr; transition:grid-template-rows 0.28s ease;
+    border-top:1px solid var(--line);
+  }
+  .nav-mobile-inner{overflow:hidden;}
+  .nav-mobile.open{grid-template-rows:1fr;}
+  .nav-mobile ul{list-style:none; margin:0; padding:6px 28px 18px;}
+  .nav-mobile a{
+    display:block; padding:12px 0; text-decoration:none; color:var(--text-on-paper);
+    font-size:15px; font-weight:500; border-bottom:1px solid var(--line);
+  }
+  @media (max-width:680px){
+    .nav-links{display:none;}
+    .nav-toggle{display:flex;}
+    .nav-mobile{display:grid;}
+    .nav-inner .btn-primary{display:none;}
+  }
+  @media (min-width:681px){ .nav-mobile{display:none !important;} }
+
+  .reveal{opacity:0; transform:translateY(18px); transition:opacity 0.6s ease, transform 0.6s ease;}
+  .reveal.in-view{opacity:1; transform:translateY(0);}
+
+  .copy-btn{
+    background:none; border:1px solid var(--line); border-radius:var(--radius);
+    width:34px; height:34px; display:inline-flex; align-items:center; justify-content:center;
+    cursor:pointer; color:rgba(27,36,28,0.55); flex-shrink:0; transition:border-color 0.2s ease, color 0.2s ease;
+    margin-left:14px;
+  }
+  .copy-btn:hover{border-color:var(--rust); color:var(--rust);}
+  .copy-btn.copied{border-color:var(--teal); color:var(--teal);}
+  .contact-row{display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--line); padding:4px 2px;}
+  .contact-list li:last-child .contact-row{border-bottom:1px solid var(--line);}
+  .contact-row a{flex:1; border:none; padding:14px 0;}
+  .copy-tip{
+    position:relative;
+  }
+  .copy-tip::after{
+    content:'Copied'; position:absolute; right:0; top:-26px; font-size:11px;
+    background:var(--ink); color:var(--paper); padding:3px 8px; border-radius:3px;
+    opacity:0; transform:translateY(4px); transition:opacity 0.18s ease, transform 0.18s ease; pointer-events:none;
+  }
+  .copy-tip.show::after{opacity:1; transform:translateY(0);}
 
   /* ---------- HERO ---------- */
   .hero{
@@ -331,10 +386,8 @@
   .contact h2{font-size:clamp(32px,5vw,52px); line-height:1.08; max-width:12ch;}
   .contact-sub{margin-top:18px; font-size:15px; color:rgba(27,36,28,0.65); max-width:42ch; line-height:1.6;}
   .contact-list{list-style:none; margin:34px 0 0; padding:0;}
-  .contact-list li{border-top:1px solid var(--line);}
-  .contact-list li:last-child{border-bottom:1px solid var(--line);}
   .contact-list a{
-    display:flex; justify-content:space-between; align-items:center;
+    display:flex; justify-content:space-between; align-items:center; flex:1;
     padding:18px 2px; text-decoration:none; font-size:15px; font-weight:500;
   }
   .contact-list .ck{color:rgba(27,36,28,0.5); font-size:11.5px; text-transform:uppercase; letter-spacing:0.07em; font-weight:400; font-family:'IBM Plex Mono',monospace;}
@@ -363,6 +416,18 @@
       <li><a href="#contact">Contact</a></li>
     </ul>
     <a href="#contact" class="btn btn-primary" style="padding:9px 16px; font-size:12.5px;">Get in touch</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="navMobile"><span></span></button>
+  </div>
+  <div class="nav-mobile" id="navMobile">
+    <div class="nav-mobile-inner">
+      <ul>
+        <li><a href="#about">About</a></li>
+        <li><a href="#work">Work</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#credentials">Credentials</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
   </div>
 </nav>
 
@@ -601,10 +666,10 @@
       <p class="contact-sub">Available for solar installation, sizing, and site work. Based in Busia County, reachable anywhere.</p>
     </div>
     <ul class="contact-list">
-      <li><a href="mailto:oduorcaxyton@gmail.com"><span><span class="ck">Email</span><br>oduorcaxyton@gmail.com</span><span class="arrow">→</span></a></li>
-      <li><a href="tel:+254793534549"><span><span class="ck">Phone</span><br>+254 793 534 549</span><span class="arrow">→</span></a></li>
-      <li><a href="https://www.linkedin.com/in/caxyton-oduor-4b79b0234/" target="_blank" rel="noopener"><span><span class="ck">LinkedIn</span><br>caxyton-oduor-4b79b0234</span><span class="arrow">→</span></a></li>
-      <li><a href="#"><span><span class="ck">Address</span><br>P.O. Box 317, Funyula</span><span class="arrow">→</span></a></li>
+      <li><div class="contact-row"><a href="mailto:oduorcaxyton@gmail.com"><span><span class="ck">Email</span><br>oduorcaxyton@gmail.com</span><span class="arrow">→</span></a><button class="copy-btn copy-tip" data-copy="oduorcaxyton@gmail.com" aria-label="Copy email address" title="Copy email"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="1.5"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg></button></div></li>
+      <li><div class="contact-row"><a href="tel:+254793534549"><span><span class="ck">Phone</span><br>+254 793 534 549</span><span class="arrow">→</span></a><button class="copy-btn copy-tip" data-copy="+254793534549" aria-label="Copy phone number" title="Copy phone number"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="1.5"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg></button></div></li>
+      <li><div class="contact-row"><a href="https://www.linkedin.com/in/caxyton-oduor-4b79b0234/" target="_blank" rel="noopener"><span><span class="ck">LinkedIn</span><br>caxyton-oduor-4b79b0234</span><span class="arrow">→</span></a></div></li>
+      <li><div class="contact-row"><a href="https://www.google.com/maps/search/?api=1&query=Funyula%2C+Busia+County%2C+Kenya" target="_blank" rel="noopener"><span><span class="ck">Address</span><br>P.O. Box 317, Funyula</span><span class="arrow">→</span></a></div></li>
     </ul>
   </div>
 </section>
@@ -616,5 +681,86 @@
   </div>
 </footer>
 
+<script>
+(function(){
+  // Mobile nav toggle
+  var toggle = document.getElementById('navToggle');
+  var panel = document.getElementById('navMobile');
+  if(toggle && panel){
+    toggle.addEventListener('click', function(){
+      var open = panel.classList.toggle('open');
+      toggle.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    panel.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', function(){
+        panel.classList.remove('open');
+        toggle.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  }
+
+  // Scroll-spy active nav link
+  var sections = document.querySelectorAll('section[id], header[id]');
+  var navAnchors = document.querySelectorAll('.nav-links a');
+  if(sections.length && navAnchors.length && 'IntersectionObserver' in window){
+    var spy = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          navAnchors.forEach(function(a){
+            a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id);
+          });
+        }
+      });
+    }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+    sections.forEach(function(s){ spy.observe(s); });
+  }
+
+  // Reveal on scroll
+  var revealTargets = document.querySelectorAll('.section-head, .service, .cred-card, .tl-item, .work-card, .focus, .about-lede, .fact-list');
+  revealTargets.forEach(function(el){ el.classList.add('reveal'); });
+  if('IntersectionObserver' in window){
+    var reveal = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add('in-view');
+          reveal.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+    revealTargets.forEach(function(el){ reveal.observe(el); });
+  } else {
+    revealTargets.forEach(function(el){ el.classList.add('in-view'); });
+  }
+
+  // Copy to clipboard
+  document.querySelectorAll('.copy-btn[data-copy]').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      var text = btn.getAttribute('data-copy');
+      var done = function(){
+        btn.classList.add('copied', 'show');
+        btn.setAttribute('title', 'Copied');
+        setTimeout(function(){
+          btn.classList.remove('copied', 'show');
+          btn.setAttribute('title', btn.getAttribute('aria-label'));
+        }, 1500);
+      };
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(done).catch(done);
+      } else {
+        var tmp = document.createElement('textarea');
+        tmp.value = text;
+        document.body.appendChild(tmp);
+        tmp.select();
+        try{ document.execCommand('copy'); } catch(err){}
+        document.body.removeChild(tmp);
+        done();
+      }
+    });
+  });
+})();
+</script>
 </body>
 </html>
